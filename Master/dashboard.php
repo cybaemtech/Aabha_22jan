@@ -56,13 +56,53 @@ function getCount($conn, $query) {
     return $row ? $row['cnt'] : 0;
 }
 
-// Fetch counts
-$suppliers    = getCount($conn, "SELECT COUNT(*) as cnt FROM suppliers");
-$materials    = getCount($conn, "SELECT COUNT(*) as cnt FROM materials");
-$departments  = getCount($conn, "SELECT COUNT(*) as cnt FROM departments");
-$machines     = getCount($conn, "SELECT COUNT(*) as cnt FROM machines");
-$products     = getCount($conn, "SELECT COUNT(*) as cnt FROM products");
-$gateEntries  = getCount($conn, "SELECT COUNT(*) as cnt FROM gate_entries");
+// Fetch counts based on user permissions
+$suppliers = 0;
+$materials = 0;
+$departments = 0;
+$machines = 0;
+$products = 0;
+$gateEntries = 0;
+$dippingCount = 0;
+$electronicCount = 0;
+$sealingCount = 0;
+$transactionCount = 0;
+
+$userPermissions = $_SESSION['menu_permissions'] ?? [];
+$is_admin = in_array('all', $userPermissions) || in_array('admin', $userPermissions);
+
+if ($is_admin || in_array('master', $userPermissions) || in_array('master_supplier', $userPermissions)) {
+    $suppliers = getCount($conn, "SELECT COUNT(*) as cnt FROM suppliers");
+}
+if ($is_admin || in_array('master', $userPermissions) || in_array('master_material', $userPermissions)) {
+    $materials = getCount($conn, "SELECT COUNT(*) as cnt FROM materials");
+}
+if ($is_admin || in_array('master', $userPermissions) || in_array('master_department', $userPermissions)) {
+    $departments = getCount($conn, "SELECT COUNT(*) as cnt FROM departments");
+}
+if ($is_admin || in_array('master', $userPermissions) || in_array('master_machine', $userPermissions)) {
+    $machines = getCount($conn, "SELECT COUNT(*) as cnt FROM machines");
+}
+if ($is_admin || in_array('master', $userPermissions) || in_array('master_product', $userPermissions)) {
+    $products = getCount($conn, "SELECT COUNT(*) as cnt FROM products");
+}
+if ($is_admin || in_array('transaction', $userPermissions) || in_array('transaction_gate_entry', $userPermissions)) {
+    $gateEntries = getCount($conn, "SELECT COUNT(*) as cnt FROM gate_entries");
+}
+
+// Process data counts
+$dippingCount = getCount($conn, "SELECT COUNT(*) as cnt FROM dipping_entries");
+$electronicCount = getCount($conn, "SELECT COUNT(*) as cnt FROM electronic_batch_entries");
+$sealingCount = getCount($conn, "SELECT COUNT(*) as cnt FROM sealing_entries");
+$transactionCount = getCount($conn, "SELECT COUNT(*) as cnt FROM transaction_master");
+
+// Monthly trends (mock data structure for charts)
+$monthlyData = [
+    'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    'dipping' => [65, 59, 80, 81, 56, 55],
+    'electronic' => [28, 48, 40, 19, 86, 27],
+    'sealing' => [45, 25, 16, 36, 67, 18]
+];
 
 // Today's activity counts (using Kolkata date)
 $todayDate = date('Y-m-d'); // This will now be Kolkata date
@@ -238,13 +278,25 @@ $recentActivities = array_slice($recentActivities, 0, 4);
 
         /* Compact Welcome Header */
         .welcome-header {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
         }
 
         .welcome-header h1 {
@@ -371,26 +423,54 @@ $recentActivities = array_slice($recentActivities, 0, 4);
 
         .dashboard-card {
             background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 14px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 20px;
             text-align: center;
-            transition: all 0.2s ease;
-            border: 1px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
             position: relative;
             overflow: hidden;
-            min-height: 100px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .dashboard-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #3b82f6;
+        }
+
+        .dashboard-card:hover::before {
+            opacity: 1;
         }
 
         .dashboard-card .icon {
-            font-size: 1.5rem;
-            margin-bottom: 6px;
-            color: #3b82f6;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: transform 0.3s;
+        }
+
+        .dashboard-card:hover .icon {
+            transform: scale(1.2) rotate(5deg);
         }
 
         .dashboard-card .count {
@@ -409,39 +489,28 @@ $recentActivities = array_slice($recentActivities, 0, 4);
             line-height: 1.2;
         }
 
-        /* Compact Charts */
         .chart-container {
             background: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.3s ease;
         }
 
-        .chart-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+        .chart-container:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
         }
 
-        .chart-title i {
-            font-size: 1rem;
-        }
-
-        /* Compact Activity Card */
         .activity-card {
             background: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
 
         .activity-card h5 {
@@ -616,51 +685,110 @@ $recentActivities = array_slice($recentActivities, 0, 4);
         </div>
     </div>
 
+    <!-- Process Stats Grid -->
+    <!-- <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="dashboard-card animate__animated animate__zoomIn" style="animation-delay: 0.1s; border-left: 5px solid #3b82f6;">
+                <div class="icon"><i class="fas fa-vial"></i></div>
+                <div class="count"><?= $dippingCount ?></div>
+                <div class="label">Total Dipping</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-card animate__animated animate__zoomIn" style="animation-delay: 0.2s; border-left: 5px solid #10b981;">
+                <div class="icon"><i class="fas fa-microchip"></i></div>
+                <div class="count"><?= $electronicCount ?></div>
+                <div class="label">Electronic Testing</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-card animate__animated animate__zoomIn" style="animation-delay: 0.3s; border-left: 5px solid #f59e0b;">
+                <div class="icon"><i class="fas fa-lock"></i></div>
+                <div class="count"><?= $sealingCount ?></div>
+                <div class="label">Sealing Completed</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-card animate__animated animate__zoomIn" style="animation-delay: 0.4s; border-left: 5px solid #ef4444;">
+                <div class="icon"><i class="fas fa-exchange-alt"></i></div>
+                <div class="count"><?= $transactionCount ?></div>
+                <div class="label">Total Transactions</div>
+            </div>
+        </div>
+    </div> -->
+
     <!-- Compact Stats Cards -->
     <div class="stats-grid">
+        <?php if ($suppliers > 0 || $is_admin): ?>
         <div class="dashboard-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
             <div class="icon"><i class="fas fa-truck"></i></div>
             <div class="count" data-target="<?= $suppliers ?>"><?= $suppliers ?></div>
             <div class="label">Suppliers</div>
         </div>
+        <?php endif; ?>
 
+        <?php if ($departments > 0 || $is_admin): ?>
         <div class="dashboard-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
             <div class="icon"><i class="fas fa-building"></i></div>
             <div class="count" data-target="<?= $departments ?>"><?= $departments ?></div>
             <div class="label">Departments</div>
         </div>
+        <?php endif; ?>
 
+        <?php if ($materials > 0 || $is_admin): ?>
         <div class="dashboard-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
             <div class="icon"><i class="fas fa-boxes"></i></div>
             <div class="count" data-target="<?= $materials ?>"><?= $materials ?></div>
             <div class="label">Materials</div>
         </div>
+        <?php endif; ?>
 
+        <?php if ($machines > 0 || $is_admin): ?>
         <div class="dashboard-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
             <div class="icon"><i class="fas fa-cogs"></i></div>
             <div class="count" data-target="<?= $machines ?>"><?= $machines ?></div>
             <div class="label">Machines</div>
         </div>
+        <?php endif; ?>
 
+        <?php if ($products > 0 || $is_admin): ?>
         <div class="dashboard-card animate__animated animate__fadeInUp" style="animation-delay: 0.5s;">
             <div class="icon"><i class="fas fa-cubes"></i></div>
             <div class="count" data-target="<?= $products ?>"><?= $products ?></div>
             <div class="label">Products</div>
         </div>
+        <?php endif; ?>
 
+        <?php if ($gateEntries > 0 || $is_admin): ?>
         <div class="dashboard-card animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
             <div class="icon"><i class="fas fa-sign-in-alt"></i></div>
             <div class="count" data-target="<?= $gateEntries ?>"><?= $gateEntries ?></div>
             <div class="label">Gate Entries</div>
         </div>
+        <?php endif; ?>
     </div>
 
     <!-- Compact Charts and Activities Row -->
     <div class="row g-3">
+        <div class="col-lg-4">
+            <div class="chart-container animate__animated animate__fadeInLeft">
+                <div class="chart-title"><i class="fas fa-chart-pie"></i> QC Status Distribution</div>
+                <canvas id="qcChart" style="max-height: 250px;"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="chart-container animate__animated animate__fadeInUp">
+                <div class="chart-title"><i class="fas fa-chart-line"></i> Production Trends (Last 6 Months)</div>
+                <canvas id="trendChart" style="max-height: 250px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
         <div class="col-lg-6">
             <div class="chart-container animate__animated animate__fadeInLeft">
-                <div class="chart-title"><i class="fas fa-chart-pie"></i> QC Status</div>
-                <canvas id="qcChart" style="max-height: 250px;"></canvas>
+                <div class="chart-title"><i class="fas fa-tasks"></i> Process Completion</div>
+                <canvas id="processBarChart" style="max-height: 250px;"></canvas>
             </div>
         </div>
         <div class="col-lg-6">
@@ -718,110 +846,136 @@ $recentActivities = array_slice($recentActivities, 0, 4);
     </div>
 </div>
 
-<script>
-// Real-time clock update for Kolkata time
-function updateTime() {
-    const now = new Date();
-    // Convert to Kolkata time
-    const kolkataTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
-    const timeString = kolkataTime.toLocaleString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-    });
-    
-    document.getElementById('currentTime').textContent = timeString;
-}
-
-// Update time every second
-setInterval(updateTime, 1000);
-
-// Animated count-up for dashboard cards
-document.querySelectorAll('.dashboard-card .count').forEach(function(el) {
-    const target = parseInt(el.dataset.target) || 0;
-    let start = 0;
-    const duration = 1500;
-    const step = target / (duration / 16);
-    
-    const timer = setInterval(function() {
-        start += step;
-        if (start >= target) {
-            el.textContent = target.toLocaleString();
-            clearInterval(timer);
-        } else {
-            el.textContent = Math.floor(start).toLocaleString();
+    <script>
+        // Real-time clock update for Kolkata time
+        function updateTime() {
+            const now = new Date();
+            const kolkataTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+            const timeString = kolkataTime.toLocaleString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            
+            const timeEl = document.getElementById('currentTime');
+            if (timeEl) timeEl.textContent = timeString;
         }
-    }, 16);
-});
 
-// Enhanced QC Status Chart with all 5 statuses
-const qcCtx = document.getElementById('qcChart').getContext('2d');
-const qcChart = new Chart(qcCtx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Accept', 'Under Deviation', 'Hold', 'Reject', 'Pending'],
-        datasets: [{
-            data: [
-                <?= $qcStatusCounts['Accept'] ?>,
-                <?= $qcStatusCounts['under_Deviation'] ?>,
-                <?= $qcStatusCounts['Hold'] ?>,
-                <?= $qcStatusCounts['Reject'] ?>,
-                <?= $qcStatusCounts['Pending'] ?>
-            ],
-            backgroundColor: [
-                '#10b981',  // Accept - Green
-                '#f97316',  // Under Deviation - Orange
-                '#f59e0b',  // Hold - Yellow
-                '#ef4444',  // Reject - Red
-                '#6b7280'   // Pending - Gray
-            ],
-            borderWidth: 2,
-            borderColor: '#ffffff',
-            hoverOffset: 8
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        animation: {
-            duration: 1500,
-            easing: 'easeOutQuart'
-        },
-        plugins: {
-            legend: { 
-                position: 'bottom',
-                labels: {
-                    padding: 15,
-                    usePointStyle: true,
-                    font: {
-                        size: 11,
-                        family: 'Inter'
-                    }
-                },
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                titleColor: '#ffffff',
-                bodyColor: '#ffffff',
-                cornerRadius: 8,
-                font: {
-                    family: 'Inter'
-                },
-                callbacks: {
-                    label: function(context) {
-                        const label = context.label || '';
-                        const value = context.parsed || 0;
-                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                        return `${label}: ${value} (${percentage}%)`;
-                    }
+        setInterval(updateTime, 1000);
+
+        // Animated count-up for dashboard cards
+        document.querySelectorAll('.dashboard-card .count').forEach(function(el) {
+            const target = parseInt(el.textContent.replace(/,/g, '')) || 0;
+            let start = 0;
+            const duration = 2000;
+            const step = target / (duration / 16);
+            
+            const timer = setInterval(function() {
+                start += step;
+                if (start >= target) {
+                    el.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    el.textContent = Math.floor(start).toLocaleString();
                 }
-            }
-        },
-        cutout: '60%'
-    }
-});
-</script>
+            }, 16);
+        });
+
+        // QC Status Chart
+        const qcCtx = document.getElementById('qcChart');
+        if (qcCtx) {
+            new Chart(qcCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Accept', 'Under Deviation', 'Hold', 'Reject', 'Pending'],
+                    datasets: [{
+                        data: [
+                            <?= (int)$qcStatusCounts['Accept'] ?>,
+                            <?= (int)$qcStatusCounts['under_Deviation'] ?>,
+                            <?= (int)$qcStatusCounts['Hold'] ?>,
+                            <?= (int)$qcStatusCounts['Reject'] ?>,
+                            <?= (int)$qcStatusCounts['Pending'] ?>
+                        ],
+                        backgroundColor: ['#10b981', '#f97316', '#f59e0b', '#ef4444', '#6b7280'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    animation: { duration: 2000, easing: 'easeOutElastic' },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        // Production Trend Chart
+        const trendCtx = document.getElementById('trendChart');
+        if (trendCtx) {
+            new Chart(trendCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: <?= json_encode($monthlyData['labels']) ?>,
+                    datasets: [
+                        {
+                            label: 'Dipping',
+                            data: <?= json_encode($monthlyData['dipping']) ?>,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointHoverRadius: 8
+                        },
+                        {
+                            label: 'Electronic',
+                            data: <?= json_encode($monthlyData['electronic']) ?>,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointHoverRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    animation: { duration: 2500, easing: 'easeOutQuart' },
+                    plugins: { legend: { position: 'top' } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // Process Bar Chart
+        const barCtx = document.getElementById('processBarChart');
+        if (barCtx) {
+            new Chart(barCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Dipping', 'Electronic', 'Sealing', 'Transactions'],
+                    datasets: [{
+                        label: 'Process Volume',
+                        data: [<?= (int)$dippingCount ?>, <?= (int)$electronicCount ?>, <?= (int)$sealingCount ?>, <?= (int)$transactionCount ?>],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
+                        borderRadius: 12,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: { duration: 2000, easing: 'easeOutBounce' },
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+    </script>
 
 </body>
 </html>
