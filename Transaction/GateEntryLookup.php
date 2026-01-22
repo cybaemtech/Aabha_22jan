@@ -112,74 +112,275 @@ include '../Includes/sidebar.php';
     <link rel="stylesheet" href="../assets/css/style.css">
     
     <style>
-        /* Additional styles specific to gate entry lookup page */
-        .entry-status-badge {
-            padding: 4px 8px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: 600;
+        .main-content {
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        .badge-today {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        .badge-past {
-            background: linear-gradient(45deg, #6c757d, #495057);
-            color: white;
+
+        /* Updated Stats Layout */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
         }
-        
-        .invoice-badge {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 600;
+
+        .stats-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-align: left;
         }
-        
-        .package-count {
-            background: linear-gradient(45deg, #17a2b8, #138496);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            border-color: #4f42c1;
+        }
+
+        .stats-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .icon-total { background: rgba(79, 66, 193, 0.1); color: #4f42c1; }
+        .icon-today { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .icon-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .icon-suppliers { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+
+        .stats-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stats-number {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        .stats-label {
             font-size: 0.8rem;
             font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
+
         .search-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            margin-bottom: 32px;
         }
-        
-        .advanced-search-toggle {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            overflow: hidden;
+            background: #ffffff;
         }
-        
-        .advanced-search-toggle:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-        
-        .date-range-container {
+
+        .card-header {
+            background: #ffffff;
+            color: #1e293b;
+            padding: 24px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        .date-separator {
-            color: #6c757d;
+
+        .card-header i {
+            color: #4f42c1;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Modern Scrollbar Styling */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+            border: 2px solid #f1f5f9;
+        }
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .table {
+            margin-bottom: 0;
+            min-width: 1400px; /* Force horizontal scroll for better overview */
+        }
+
+        .table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 16px 20px;
+            border-bottom: 2px solid #f1f5f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .table tbody td {
+            padding: 16px 20px;
+            vertical-align: middle;
+            color: #1e293b;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        .action-buttons a {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin: 0 4px;
+            text-decoration: none;
+        }
+
+        .action-buttons a:hover {
+            transform: scale(1.1);
+        }
+
+        .text-primary { color: #4f42c1 !important; background: rgba(79, 66, 193, 0.1); }
+        .text-danger { color: #ef4444 !important; background: rgba(239, 68, 68, 0.1); }
+
+        .entry-status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-today { background: #dcfce7; color: #15803d; }
+        .badge-past { background: #f1f5f9; color: #475569; }
+
+        .invoice-badge {
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .package-count {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .bg-success { background: #dcfce7 !important; color: #15803d !important; }
+        .bg-warning { background: #fef9c3 !important; color: #a16207 !important; }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 12px;
             font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-success {
+            background: #10b981;
+            border: none;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .form-label {
+            font-weight: 700;
+            color: #475569;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 10px 16px;
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .form-control:focus {
+            border-color: #4f42c1;
+            box-shadow: 0 0 0 4px rgba(79, 66, 193, 0.1);
+        }
+
+        .advanced-search-toggle {
+            color: #4f42c1;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .advanced-search-toggle:hover {
+            color: #4338ca;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -210,22 +411,45 @@ include '../Includes/sidebar.php';
     <?php endif; ?>
 
     <!-- Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="stats-card">
-                <div class="stats-number"><?php echo $totalEntries; ?></div>
-                <div class="stats-label">Total Gate Entries</div>
+    <div class="stats-overview">
+        <div class="stats-card">
+            <div class="stats-icon icon-total">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="stats-info">
+                <div class="stats-number"><?php echo number_format($totalEntries); ?></div>
+                <div class="stats-label">Total Entries</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="stats-card">
-                <div class="stats-number"><?php echo $todayEntries; ?></div>
+        <div class="stats-card">
+            <div class="stats-icon icon-today">
+                <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="stats-info">
+                <div class="stats-number"><?php echo number_format($todayEntries); ?></div>
                 <div class="stats-label">Today's Entries</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="stats-card">
-                <div class="stats-number"><?php echo $totalSuppliers; ?></div>
+        <div class="stats-card">
+            <div class="stats-icon icon-pending">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stats-info">
+                <?php
+                $pendingCountQuery = sqlsrv_query($conn, "SELECT COUNT(*) as count FROM gate_entries WHERE is_deleted = 0 AND id NOT IN (SELECT gate_entry_id FROM store_entry_materials WHERE delete_id = 0)");
+                $pendingCountRow = sqlsrv_fetch_array($pendingCountQuery, SQLSRV_FETCH_ASSOC);
+                $pendingCount = $pendingCountRow['count'];
+                ?>
+                <div class="stats-number"><?php echo number_format($pendingCount); ?></div>
+                <div class="stats-label">Pending Process</div>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-icon icon-suppliers">
+                <i class="fas fa-truck"></i>
+            </div>
+            <div class="stats-info">
+                <div class="stats-number"><?php echo number_format($totalSuppliers); ?></div>
                 <div class="stats-label">Active Suppliers</div>
             </div>
         </div>
@@ -300,7 +524,7 @@ include '../Includes/sidebar.php';
     </div>
 
     <!-- Gate Entry List -->
-    <div class="card">
+    <div class="card" style="margin-bottom: 60px;"> <!-- Space for bottom scroller -->
         <div class="card-header">
             <i class="fas fa-list me-2"></i>Gate Entry List
             <?php if (!empty($search_invoice) || !empty($search_vehicle) || !empty($search_supplier) || !empty($search_date_from) || !empty($search_date_to)): ?>
@@ -310,7 +534,7 @@ include '../Includes/sidebar.php';
             <?php endif; ?>
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table-responsive" id="mainTableResponsive">
                 <table class="table table-striped table-hover mb-0">
                     <thead>
                         <tr>
@@ -426,9 +650,9 @@ include '../Includes/sidebar.php';
                                     $hasStoreEntry = $storeEntryRow['count'] > 0;
                                     ?>
                                     <?php if ($hasStoreEntry): ?>
-                                        <span class="badge bg-success">Processed</span>
+                                        <span class="status-badge bg-success">Processed</span>
                                     <?php else: ?>
-                                        <span class="badge bg-warning">Pending</span>
+                                        <span class="status-badge bg-warning">Pending</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -460,8 +684,13 @@ include '../Includes/sidebar.php';
     </div>
 </div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bottom Fixed Scroller -->
+    <div id="bottomScrollerContainer" style="overflow-x: auto; position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #f1f5f9; height: 14px; z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.05);">
+        <div id="bottomScrollerContent" style="height: 1px;"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
@@ -544,7 +773,47 @@ include '../Includes/sidebar.php';
         document.querySelector('input[name="date_to"]').value = today;
         document.getElementById('searchForm').submit();
     });
+
+    // Synchronize bottom scrollers
+    const bottomScroller = document.getElementById('bottomScrollerContainer');
+    const bottomContent = document.getElementById('bottomScrollerContent');
+    const mainTable = document.getElementById('mainTableResponsive');
+    const table = mainTable ? mainTable.querySelector('table') : null;
+
+    if (bottomScroller && bottomContent && mainTable && table) {
+        const updateWidth = () => {
+            bottomContent.style.width = table.offsetWidth + 'px';
+        };
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+
+        bottomScroller.onscroll = function() {
+            mainTable.scrollLeft = bottomScroller.scrollLeft;
+        };
+        mainTable.onscroll = function() {
+            bottomScroller.scrollLeft = mainTable.scrollLeft;
+        };
+    }
 </script>
+
+<style>
+    /* Custom styling for the fixed bottom scroller */
+    #bottomScrollerContainer::-webkit-scrollbar {
+        height: 8px;
+    }
+    #bottomScrollerContainer::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+    #bottomScrollerContainer::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+        border: 2px solid #f1f5f9;
+    }
+    #bottomScrollerContainer::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+</style>
 
 </body>
 </html>

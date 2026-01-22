@@ -161,29 +161,30 @@ $profileImg = ($profilePhoto && file_exists("../uploads/$profilePhoto"))
     : "../asset/admin.png";
 ?>
 
-<!-- Keep your existing CSS styles -->
 <style>
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f6f9fc;
+    background: #f8fafc;
 }
+
 .sidebar {
     position: fixed;
     left: 0;
     top: 0;
-    width: 240px;
+    width: 260px;
     height: 100vh;
-    background: #fff;
-    color: #222;
-    border-right: 1px solid #e5e7eb;
+    background: #ffffff;
+    color: #334155;
+    border-right: 1px solid #e2e8f0;
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease-in-out;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(0);
     overflow-y: auto;
     scroll-behavior: smooth;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
 }
 
 .sidebar.hide {
@@ -191,238 +192,264 @@ body {
 }
 
 .sidebar-header {
-    padding: 24px 18px 12px 18px;
-    border-bottom: 1px solid #f1f1f1;
+    padding: 24px 20px;
+    border-bottom: 1px solid #f1f5f9;
     display: flex;
     align-items: center;
-    gap: 10px;
-    background: #fff;
+    gap: 12px;
+    background: #ffffff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
+
 .sidebar-header img {
-    width: 50px;
-    height: 50px;
+    width: 42px;
+    height: 42px;
     object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
 }
+
 .sidebar-header span {
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #3b82f6;
-    letter-spacing: 1px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1e293b;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
+
 .sidebar-menu {
     flex: 1;
-    padding: 18px 0 0 0;
+    padding: 20px 12px;
 }
+
 .sidebar-menu ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
+
 .sidebar-menu li {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     position: relative;
+    animation: slideIn 0.4s ease-out forwards;
+    opacity: 0;
 }
+
 .sidebar-menu a,
 .sidebar-main-menu {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 24px;
-    color: #222;
+    padding: 12px 16px;
+    color: #475569;
     text-decoration: none;
-    font-size: 1rem;
-    transition: background 0.2s, color 0.2s;
-    border-radius: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
 }
-.sidebar-menu a.active,
+
 .sidebar-menu a:hover,
 .sidebar-main-menu:hover {
-    background: #e8f0fe;
-    color: rgb(79 66 193);
+    background: #f1f5f9;
+    color: #4f42c1;
+    transform: translateX(4px);
 }
+
 .sidebar-main-menu.active,
 .sidebar-menu a.active {
-    background-color: #4f42c1;
-    color: #fff;
+    background: #4f42c1;
+    color: #ffffff;
     font-weight: 600;
+    box-shadow: 0 4px 12px rgba(79, 66, 193, 0.2);
 }
+
+.sidebar-main-menu.active:hover,
+.sidebar-menu a.active:hover {
+    transform: none;
+}
+
 .submenu {
-    display: none;
-    padding-left: 20px;
-    background-color: #f1f3f9;
+    max-height: 0;
+    overflow: hidden;
+    padding-left: 0;
+    background-color: transparent;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    visibility: hidden;
+}
+
+.submenu.show {
+    max-height: 1000px;
+    opacity: 1;
+    visibility: visible;
+    padding-top: 4px;
+    padding-bottom: 8px;
+}
+
+.submenu li {
+    animation: none !important;
+    opacity: 1 !important;
+}
+
+.submenu li a {
+    padding: 10px 16px 10px 48px;
+    background-color: transparent;
+    color: #64748b;
+    font-size: 0.9rem;
+    border-radius: 10px;
+}
+
+.submenu li a::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background: #cbd5e1;
+    border-radius: 50%;
+    transform: translateY(-50%);
     transition: all 0.3s ease;
 }
-.submenu.show {
-    display: block;
+
+.submenu li a:hover::before {
+    background: #4f42c1;
+    transform: translateY(-50%) scale(1.5);
 }
-.submenu li a {
-    padding: 10px 40px;
-    background-color: #f1f3f9;
-    color: #333;
-    display: flex;
-    align-items: center;
+
+.submenu li a.active::before {
+    background: #ffffff;
 }
-.submenu li a:hover {
-    background-color: #e0e7ff;
-    color: #111;
-}
-.sidebar-main-menu {
-    cursor: pointer;
-}
+
 .sidebar-main-menu .icon {
-    font-size: 1.2em;
-    width: 22px;
-    text-align: center;
-}
-.dropdown-arrow {
-    margin-left: auto;
+    font-size: 1.1rem;
+    width: 24px;
+    display: flex;
+    justify-content: center;
     transition: transform 0.3s ease;
 }
-.sidebar-main-menu.active .dropdown-arrow i {
+
+.dropdown-arrow {
+    margin-left: auto;
+    font-size: 0.8rem;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.6;
+}
+
+.sidebar-main-menu.active .dropdown-arrow {
     transform: rotate(180deg);
-}
-.menu-label {
-    flex: 1;
-    white-space: normal;
-    overflow-wrap: break-word;
-    font-size: 0.95rem;
-    line-height: 1.2;
-}
-
-#sidebar-toggle {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    transition: background 0.2s;
-    margin-right: 10px;
-}
-#sidebar-toggle:hover {
-    background: #f3f4f6;
-}
-
-.sidebar-footer {
-    padding: 16px 18px 12px 18px;
-    border-top: 1px solid #f1f1f1;
-    font-size: 0.95em;
-    color: #888;
-    background: #fff;
-}
-
-@media (max-width: 900px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    
-    .sidebar.show {
-        transform: translateX(0);
-    }
-    
-    .main-header {
-        margin-left: 0 !important;
-        padding-left: 12px !important;
-    }
-    
-    .main-content {
-        margin-left: 0 !important;
-        width: 100% !important;
-    }
-    
-    .main-footer {
-        left: 0 !important;
-        width: 100% !important;
-    }
+    opacity: 1;
 }
 
 .main-header {
-    margin-left: 240px;
-    height: 70px;
-    background: #fff;
-    border-bottom: 1px solid #e5e7eb;
+    margin-left: 260px;
+    height: 72px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #f1f5f9;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 32px;
     z-index: 900;
-    position: relative;
-    transition: margin-left 0.3s ease-in-out;
+    position: sticky;
+    top: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .main-content {
-    margin-left: 240px;
-    padding: 32px 32px 60px 32px;
-    min-height: calc(100vh - 70px - 40px);
-    background: #f6f9fc;
-    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+    margin-left: 260px;
+    padding: 32px;
+    min-height: calc(100vh - 72px);
+    background: #f8fafc;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.sidebar.hide ~ .main-content,
-.main-content.sidebar-collapsed {
+
+.sidebar-collapsed .main-header,
+.sidebar-collapsed.main-header {
     margin-left: 0 !important;
-    width: 100% !important;
-    max-width: 100vw !important;
 }
+
+.sidebar-collapsed .main-content,
+.sidebar-collapsed.main-content {
+    margin-left: 0 !important;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sidebar-menu li:nth-child(1) { animation-delay: 0.05s; }
+.sidebar-menu li:nth-child(2) { animation-delay: 0.1s; }
+.sidebar-menu li:nth-child(3) { animation-delay: 0.15s; }
+.sidebar-menu li:nth-child(4) { animation-delay: 0.2s; }
+.sidebar-menu li:nth-child(5) { animation-delay: 0.25s; }
+.sidebar-menu li:nth-child(6) { animation-delay: 0.3s; }
+
+#sidebar-toggle {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #475569;
+}
+
+#sidebar-toggle:hover {
+    background: #f1f5f9;
+    color: #4f42c1;
+    border-color: #4f42c1;
+}
+
 .main-footer {
     position: fixed;
-    left: 240px;
+    left: 260px;
     bottom: 0;
-    width: calc(100% - 240px);
-    transition: left 0.3s ease-in-out, width 0.3s ease-in-out;
+    width: calc(100% - 260px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 900;
+    background: #4f42c1;
+    color: #ffffff;
+    padding: 10px 16px;
+    font-size: 13px;
+    text-align: center;
 }
 
-.sidebar.hide ~ .main-footer,
-.main-footer.sidebar-collapsed {
-    left: 0;
-    width: 100%;
-}
-
-.main-header.sidebar-collapsed {
-    margin-left: 0 !important;
-}
-
-.main-content.sidebar-collapsed {
-    margin-left: 0 !important;
-    width: 100% !important;
-}
-
-.main-footer.sidebar-collapsed {
+.sidebar-collapsed .main-footer,
+.sidebar-collapsed.main-footer {
     left: 0 !important;
     width: 100% !important;
 }
 
-.sidebar.show {
-    transform: translateX(0) !important;
-}
-
-/* Smooth transitions for all elements */
-.sidebar, .main-header, .main-content, .main-footer {
-    transition: all 0.3s ease-in-out;
+@media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.show { transform: translateX(0); }
+    .main-header, .main-content, .main-footer { margin-left: 0 !important; width: 100% !important; left: 0 !important; }
 }
 </style>
 
-<!-- Sidebar with submenu-based permission checks -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <img src="../asset/Abha1_new.png" alt="logo" style="width:60px; height:50px; object-fit:contain; margin-right:8px;">
-        <span>AABHA_ERP</span>
+        <img src="../asset/Abha1_new.png" alt="logo">
+        <span>AABHA ERP</span>
     </div>
     <nav class="sidebar-menu">
         <ul>
             <?php foreach ($menuStructure as $menuKey => $menuInfo): 
-                // Get allowed submenus for this menu category
                 $allowedSubmenus = getAllowedSubmenus($menuKey, $menuStructure, $userPermissions);
+                if (empty($allowedSubmenus)) continue;
                 
-                // Skip menu if user has no access to any submenus in this category
-                if (empty($allowedSubmenus)) {
-                    continue;
-                }
-                
-                // If only one submenu is allowed, show it as a direct link
                 if (count($allowedSubmenus) === 1) {
                     $singleSubmenu = reset($allowedSubmenus);
                     $isActive = $currentPage === $singleSubmenu['file'];
@@ -430,18 +457,17 @@ body {
                     <li>
                         <a href="<?= $singleSubmenu['path']; ?>" class="<?= $isActive ? 'active' : ''; ?>">
                             <span class="icon"><i class="fas <?= $menuInfo['icon']; ?>"></i></span>
-                            <span class="menu-label"><?= $singleSubmenu['name']; ?></span>
+                            <span><?= $singleSubmenu['name']; ?></span>
                         </a>
                     </li>
                     <?php
                 } else {
-                    // Multiple submenus - show as expandable menu
                     ?>
                     <li>
                         <div class="sidebar-main-menu <?= $isMenuOpen[$menuKey] ? 'active' : ''; ?>" onclick="toggleSubMenu(this)">
                             <span class="icon"><i class="fas <?= $menuInfo['icon']; ?>"></i></span>
                             <span style="flex:1;"><?= $menuInfo['name']; ?></span>
-                            <span class="dropdown-arrow"><i class="fas <?= $isMenuOpen[$menuKey] ? 'fa-chevron-up' : 'fa-chevron-down'; ?>"></i></span>
+                            <span class="dropdown-arrow"><i class="fas fa-chevron-down"></i></span>
                         </div>
                         <ul class="submenu <?= $isMenuOpen[$menuKey] ? 'show' : ''; ?>">
                             <?php foreach ($allowedSubmenus as $pageKey => $pageInfo): 
@@ -449,7 +475,7 @@ body {
                                 ?>
                                 <li>
                                     <a href="<?= $pageInfo['path']; ?>" class="<?= $isPageActive ? 'active' : ''; ?>">
-                                        <span class="menu-label"><?= $pageInfo['name']; ?></span>
+                                        <span><?= $pageInfo['name']; ?></span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -462,43 +488,31 @@ body {
     </nav>
 </div>
 
-<!-- Header -->
-<div class="main-header" style="display: flex; align-items: center; justify-content: space-between;
- padding: 0 32px; height: 70px; background: #fff; border-bottom: 1px solid #e5e7eb; margin-left: 240px;
- transition: margin-left 0.3s; position: relative; z-index: 1000;">
-    
-    <!-- Left: Sidebar Toggle -->
+<div class="main-header" id="main-header">
     <div style="display: flex; align-items: center; gap: 18px;">
-        <button id="sidebar-toggle" class="btn btn-primary" style="border-radius:8px; font-weight:700; 
-        padding:6px 22px; background:#f7f8fa; color:#222; border:1px solid #1e4186; box-shadow:none;
-        display:flex; align-items:center;">
+        <button id="sidebar-toggle">
             <i class="fas fa-bars"></i>
         </button>
     </div>
 
-    <!-- Right: User Info + Dropdown -->
-    <div style="display: flex; align-items: center; gap: 22px; position: relative;">
-        <span style="display:flex;flex-direction:column;align-items:flex-end;">
-            <span style="font-weight:500; color: black;"><?php echo htmlspecialchars($userName); ?></span>
-            <span style="font-size:0.9em;color:#666;"><?php echo htmlspecialchars($deptName); ?></span>
-        </span>
-
-        <!-- Admin Icon with Dropdown Toggle -->
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="text-align: right;">
+            <div style="font-weight: 600; color: #1e293b;"><?php echo htmlspecialchars($userName); ?></div>
+            <div style="font-size: 0.8rem; color: #64748b;"><?php echo htmlspecialchars($deptName); ?></div>
+        </div>
         <div style="position: relative;">
-            <img src="<?= htmlspecialchars($profileImg) ?>" alt="Admin Icon"
-                 id="profileDropdownToggle"
-                 style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid #ccc; cursor: pointer;">
+            <img src="<?= htmlspecialchars($profileImg) ?>" id="profileDropdownToggle"
+                 style="width: 40px; height: 40px; border-radius: 12px; object-fit: cover; border: 2px solid #e2e8f0; cursor: pointer;">
             
-            <!-- Dropdown Menu -->
-            <div id="profileDropdownMenu" style="display: none; position: absolute; right: 0; top: 48px; 
-                background: white; border: 1px solid #ccc; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-                z-index: 999; min-width: 150px;">
-                <a href="../Includes/profile_view.php" style="display: block; padding: 10px 16px; color: #333; 
-                   text-decoration: none; font-size: 14px;">
+            <div id="profileDropdownMenu" style="display: none; position: absolute; right: 0; top: 52px; 
+                background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+                z-index: 999; min-width: 180px; padding: 8px;">
+                <a href="../Includes/profile_view.php" style="display: flex; align-items: center; gap: 10px; padding: 12px; color: #475569; 
+                   text-decoration: none; font-size: 14px; border-radius: 8px; transition: 0.2s;">
                     <i class="fas fa-user"></i> Profile View
                 </a>
-                <a href="../Includes/logout.php" style="display: block; padding: 10px 16px; color: #333; 
-                   text-decoration: none; font-size: 14px;">
+                <a href="../Includes/logout.php" style="display: flex; align-items: center; gap: 10px; padding: 12px; color: #ef4444; 
+                   text-decoration: none; font-size: 14px; border-radius: 8px; transition: 0.2s;">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>
@@ -507,150 +521,64 @@ body {
 </div>
 
 <script>
-// Sidebar submenu toggle (already present)
 function toggleSubMenu(element) {
-    document.querySelectorAll('.sidebar-main-menu').forEach(function(menu) {
-        if (menu !== element) {
-            menu.classList.remove('active');
-            const submenu = menu.nextElementSibling;
-            if (submenu && submenu.classList.contains('submenu')) {
-                submenu.classList.remove('show');
-            }
-            const icon = menu.querySelector('.dropdown-arrow i');
-            if (icon) {
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
-            }
+    const submenu = element.nextElementSibling;
+    const isShowing = submenu.classList.contains('show');
+    
+    // Close other menus
+    document.querySelectorAll('.submenu').forEach(s => {
+        if (s !== submenu) {
+            s.classList.remove('show');
+            s.previousElementSibling.classList.remove('active');
         }
     });
 
-    element.classList.toggle('active');
-    const submenu = element.nextElementSibling;
-    if (submenu && submenu.classList.contains('submenu')) {
-        submenu.classList.toggle('show');
-    }
-    const icon = element.querySelector('.dropdown-arrow i');
-    if (icon) {
-        icon.classList.toggle('fa-chevron-down');
-        icon.classList.toggle('fa-chevron-up');
-    }
+    element.classList.toggle('active', !isShowing);
+    submenu.classList.toggle('show', !isShowing);
 }
 
-// Admin icon dropdown toggle (already present)
 document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const header = document.getElementById('main-header');
+    const content = document.querySelector('.main-content');
+    const footer = document.querySelector('.main-footer');
+    
     const profileToggle = document.getElementById('profileDropdownToggle');
     const profileMenu = document.getElementById('profileDropdownMenu');
 
-    // Toggle dropdown on icon click
-    profileToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        profileMenu.style.display = (profileMenu.style.display === 'block') ? 'none' : 'block';
-    });
-
-    // Hide dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!profileMenu.contains(e.target) && !profileToggle.contains(e.target)) {
-            profileMenu.style.display = 'none';
-        }
-    });
-
-    // **ADD THIS: Sidebar toggle functionality**
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.querySelector('.main-content');
-    const mainHeader = document.querySelector('.main-header');
-    const mainFooter = document.querySelector('.main-footer');
-
-    if (sidebarToggle && sidebar) {
-        sidebarToggle.addEventListener('click', function() {
-            // Toggle sidebar visibility
-            sidebar.classList.toggle('hide');
-            
-            // Toggle collapsed state for main content areas
-            if (mainContent) {
-                mainContent.classList.toggle('sidebar-collapsed');
-            }
-            if (mainHeader) {
-                mainHeader.classList.toggle('sidebar-collapsed');
-            }
-            if (mainFooter) {
-                mainFooter.classList.toggle('sidebar-collapsed');
-            }
-            
-            // Store sidebar state in localStorage for persistence
-            const isHidden = sidebar.classList.contains('hide');
-            localStorage.setItem('sidebarHidden', isHidden);
-        });
-    }
-
-    // **ADD THIS: Restore sidebar state on page load**
-    const sidebarHidden = localStorage.getItem('sidebarHidden') === 'true';
-    if (sidebarHidden && sidebar) {
-        sidebar.classList.add('hide');
-        if (mainContent) mainContent.classList.add('sidebar-collapsed');
-        if (mainHeader) mainHeader.classList.add('sidebar-collapsed');
-        if (mainFooter) mainFooter.classList.add('sidebar-collapsed');
-    }
-
-    // **ADD THIS: Handle mobile responsive behavior**
-    function handleResize() {
-        if (window.innerWidth <= 900) {
-            // On mobile, hide sidebar by default
-            sidebar.classList.add('hide');
-            sidebar.classList.remove('show');
-        } else {
-            // On desktop, restore saved state
-            const sidebarHidden = localStorage.getItem('sidebarHidden') === 'true';
-            if (sidebarHidden) {
-                sidebar.classList.add('hide');
-            } else {
-                sidebar.classList.remove('hide');
-            }
-        }
-    }
-
-    // Handle window resize
-    window.addEventListener('resize', handleResize);
-    
-    // **ADD THIS: Mobile sidebar toggle (show/hide instead of collapse)**
-    if (window.innerWidth <= 900) {
-        sidebarToggle.addEventListener('click', function() {
+    sidebarToggle.addEventListener('click', () => {
+        const isMobile = window.innerWidth <= 900;
+        if (isMobile) {
             sidebar.classList.toggle('show');
-        });
-        
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(e) {
-            if (window.innerWidth <= 900 && 
-                !sidebar.contains(e.target) && 
-                !sidebarToggle.contains(e.target) && 
-                sidebar.classList.contains('show')) {
-                sidebar.classList.remove('show');
-            }
-        });
+        } else {
+            sidebar.classList.toggle('hide');
+            [header, content, footer].forEach(el => el?.classList.toggle('sidebar-collapsed'));
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('hide'));
+        }
+    });
+
+    profileToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', () => {
+        profileMenu.style.display = 'none';
+        if (window.innerWidth <= 900) sidebar.classList.remove('show');
+    });
+
+    // Restore state
+    if (localStorage.getItem('sidebarCollapsed') === 'true' && window.innerWidth > 900) {
+        sidebar.classList.add('hide');
+        [header, content, footer].forEach(el => el?.classList.add('sidebar-collapsed'));
     }
 });
 </script>
 
-<!-- Footer -->
-<div class="main-footer" style="
-    background: rgb(79 66 193);
-    color: #ffffff;
-    padding: 6px 16px;
-    font-size: 13px;
-    text-align: center;
-    font-family: 'Segoe UI', sans-serif;
-">
+<div class="main-footer">
     Designed and Developed by 
-    <a href="https://cybaemtech.com/" target="_blank" style="
-        color: #ffd700;
-        font-weight: 600;
-        text-decoration: none;
-    ">
+    <a href="https://cybaemtech.com/" target="_blank" style="color: #fbbf24; font-weight: 600; text-decoration: none; margin-left: 5px;">
         CybaemTech
-    </a> 
-    &nbsp;&nbsp; | &nbsp;&nbsp; 
-    <a href="#" style="color: #e0e0e0; text-decoration: none;">Terms & Conditions</a> 
-    &nbsp; | &nbsp; 
-    <a href="#" style="color: #e0e0e0; text-decoration: none;">Privacy & Policy</a>
+    </a>
 </div>
-

@@ -148,25 +148,152 @@ include '../Includes/sidebar.php';
     <link rel="stylesheet" href="../assets/css/style.css">
     
     <style>
-        /* Additional styles specific to gate entry form */
         .form-container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .readonly-field {
-            background-color: #f8f9fa !important;
-            cursor: not-allowed;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        .current-time-badge {
-            background: linear-gradient(45deg, #28a745, #20c997);
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .card-header {
+            background: #4f42c1;
             color: white;
-            padding: 4px 8px;
-            border-radius: 15px;
-            font-size: 0.75rem;
+            padding: 24px;
+            font-size: 1.25rem;
             font-weight: 600;
-            margin-left: 10px;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-body {
+            padding: 30px 40px;
+        }
+
+        .form-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            border-color: #4f42c1;
+            box-shadow: 0 4px 12px rgba(79, 66, 193, 0.05);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title i {
+            color: #4f42c1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 16px;
+            border: 1.5px solid #e2e8f0;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #4f42c1;
+            box-shadow: 0 0 0 4px rgba(79, 66, 193, 0.1);
+        }
+
+        .readonly-field {
+            background-color: #f1f5f9 !important;
+            border-color: #e2e8f0 !important;
+            color: #64748b;
+        }
+
+        .current-time-badge {
+            background: rgba(79, 66, 193, 0.1);
+            color: #4f42c1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .form-actions {
+            margin-top: 40px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #4f42c1;
+            border: none;
+            box-shadow: 0 4px 12px rgba(79, 66, 193, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(79, 66, 193, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .help-text {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .required {
+            color: #ef4444;
         }
     </style>
 </head>
