@@ -1,0 +1,61 @@
+To: priyankakaranjewar567@gmail.com
+Subject: Password Reset Request - Aabha Contraceptive System
+MIME-Version: 1.0
+Content-type: text/html; charset=UTF-8
+From: Aabha Contraceptive System <noreply@gmail.com>
+Reply-To: support@aabha.com
+X-Mailer: PHP/8.2.12
+
+
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #0d6efd, #6610f2); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; }
+            .button { display: inline-block; background: #6610f2; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+            .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #666; }
+            .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h2>Password Reset Request</h2>
+                <p>Aabha Contraceptive System</p>
+            </div>
+            <div class='content'>
+                <h3>Hello Priyanka,</h3>
+                <p>We received a request to reset your password for your Aabha Contraceptive System account.</p>
+                
+                <p><strong>Account Details:</strong></p>
+                <ul>
+                    <li>Operator ID: Operator-1</li>
+                    <li>Email: priyankakaranjewar567@gmail.com</li>
+                </ul>
+                
+                <p>Click the button below to reset your password:</p>
+                <p><a href='http://localhost/Aabha/reset_password.php?token=1ab2f4f2d8d52808a9f59e6d7ac3c9163fd13ea2d20da9f26bddeb83ad316d7e' class='button'>Reset Password</a></p>
+                
+                <p>Or copy and paste this link into your browser:</p>
+                <p><a href='http://localhost/Aabha/reset_password.php?token=1ab2f4f2d8d52808a9f59e6d7ac3c9163fd13ea2d20da9f26bddeb83ad316d7e'>http://localhost/Aabha/reset_password.php?token=1ab2f4f2d8d52808a9f59e6d7ac3c9163fd13ea2d20da9f26bddeb83ad316d7e</a></p>
+                
+                <div class='warning'>
+                    <h4>Important Security Information:</h4>
+                    <ul>
+                        <li>This link will expire in 1 hour(s)</li>
+                        <li>If you didn't request this reset, please ignore this email</li>
+                        <li>For security, this link can only be used once</li>
+                        <li>Contact your system administrator if you need assistance</li>
+                    </ul>
+                </div>
+            </div>
+            <div class='footer'>
+                <p>This is an automated email from Aabha Contraceptive System. Please do not reply to this email.</p>
+                <p>Generated on: 2025-10-27 11:31:20</p>
+                <p>Request from IP: ::1</p>
+            </div>
+        </div>
+    </body>
+    </html>

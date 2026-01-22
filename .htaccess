@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Exclude API directory from rewrite rules
+  RewriteCond %{REQUEST_URI} !^/Aabha/api/
+  
+  # Remove .php extension from URLs
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}\.php -f
+  RewriteRule ^(.*)$ $1.php [L]
+
+  # Optional: Redirect .php to extension-less URL (exclude API)
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s([^.]+)\.php [NC]
+  RewriteCond %{REQUEST_URI} !^/Aabha/api/
+  RewriteRule ^ %1 [R=301,L]
+</IfModule>
